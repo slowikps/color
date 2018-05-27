@@ -1,4 +1,4 @@
-
+import sbt.Def
 
 lazy val root = (project in file("."))
   .settings(
@@ -6,22 +6,37 @@ lazy val root = (project in file("."))
     version := "0.1",
     organization := "pl.slowikps",
     scalaVersion := "2.12.6",
-    libraryDependencies ++= akkaHttp ++ akkaDependencies ++ otherDependencies,
+    libraryDependencies ++= akkaHttp ++ akkaDependencies ++ otherDependencies ++ circe,
     scalacOptions ++= compilerOptions
   )
 
-val akkaDependencies = {
+guardrailTasks in Compile := List(
+    Server(file("src/main/resources/api.yaml"), pkg="com.example.server", tracing=true)
+)
+
+val akkaDependencies: Seq[ModuleID] = {
   val version = "2.5.12"
   Seq(
     "com.typesafe.akka" %% "akka-stream" % version
   )
 }
 
-val akkaHttp = Seq("com.typesafe.akka" %% "akka-http"   % "10.1.1")
+val akkaHttp: Seq[ModuleID] = Seq("com.typesafe.akka" %% "akka-http"   % "10.1.1")
 
 val otherDependencies = Seq(
   "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 )
+
+val circe: Seq[ModuleID] = {
+  val circeVersion = "0.9.3"
+
+  Seq(
+    "io.circe" %% "circe-core" % circeVersion,
+    "io.circe" %% "circe-generic" % circeVersion,
+    "io.circe" %% "circe-parser" % circeVersion,
+    "io.circe" %% "circe-java8" % circeVersion
+  )
+}
 
 val compilerOptions: Seq[String] = Seq()
 val compilerOptions2: Seq[String] = Seq(
